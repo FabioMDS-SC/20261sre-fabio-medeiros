@@ -1,74 +1,45 @@
 # 02. Requisitos Não Funcionais (RNF)
 
-Este documento define os requisitos de qualidade técnica para o pipeline de processamento de pedidos, estruturados de acordo com a norma ISO 25010 e focados em métricas mensuráveis (SLI/SLO).
+Este documento define os requisitos de qualidade técnica para o pipeline analítico local, focados em performance de grandes volumes de dados (OLAP).
 
-## 1. Adequação Funcional (Functional Suitability)
-- **RNF-01: Completude do Processamento**
-    - **Descrição:** Garantir que todos os registros válidos identificados no arquivo de origem sejam persistidos no repositório final.
-    - **SLI:** Razão entre registros persistidos e registros válidos na origem.
-    - **SLO:** 100% de sucesso por lote de processamento.
+## 1. Eficiência de Desempenho (Performance Efficiency)
+- **RNF-01: Velocidade de Ingestão (Ingestion Speed)**
+    - **Descrição:** O sistema deve carregar 100k registros do MinIO para o ClickHouse rapidamente.
+    - **SLO:** < 5 minutos para 100k registros.
     - **Prioridade:** Must-have
 
-## 2. Eficiência de Desempenho (Performance Efficiency)
-- **RNF-02: Vazão de Processamento (Throughput)**
-    - **Descrição:** O sistema deve ser capaz de processar a carga diária de 100 mil pedidos dentro de uma janela operacional aceitável.
-    - **SLI:** Tempo total de processamento do lote diário.
-    - **SLO:** < 4 horas para 100k registros.
+- **RNF-02: Tempo de Resposta Analítica (Query Latency)**
+    - **Descrição:** Consultas complexas no Banco OLAP devem retornar dados para o dashboard quase instantaneamente.
+    - **SLO:** < 1 segundo para 95% das queries agregadas.
     - **Prioridade:** Must-have
 
-- **RNF-03: Latência de Ingestão (Data Freshness)**
-    - **Descrição:** Tempo máximo para que um registro disponível na origem apareça no repositório persistente.
-    - **SLI:** Tempo decorrido do evento de detecção até o commit no banco final.
-    - **SLO:** < 15 minutos (P95).
+## 2. Confiabilidade (Reliability)
+- **RNF-03: Integridade de Dados no OLAP**
+    - **Descrição:** Garantir que a compressão colunar não afete a precisão dos dados.
+    - **SLO:** 100% de acurácia comparado à origem.
+    - **Prioridade:** Must-have
+
+- **RNF-04: Recuperabilidade de Lote**
+    - **Descrição:** Capacidade de limpar e reprocessar o lote diário no ClickHouse em caso de falha de transformação.
+    - **SLO:** < 10 minutos para rollback e reinício.
+    - **Prioridade:** Must-have
+
+## 3. Manutenibilidade e Portabilidade
+- **RNF-05: Modularidade de Transformação**
+    - **Descrição:** As transformações devem ser modulares e documentadas via dbt.
+    - **SLO:** 100% dos modelos SQL documentados no dbt docs.
     - **Prioridade:** Should-have
 
-## 3. Compatibilidade (Compatibility)
-- **RNF-04: Interoperabilidade de Formatos**
-    - **Descrição:** O serviço de processamento deve ser capaz de ler arquivos de texto delimitados independentemente da codificação (UTF-8/ISO-8859-1).
-    - **SLI:** Taxa de sucesso na leitura de arquivos com diferentes encodings.
-    - **SLO:** 100% de sucesso para encodings homologados.
-    - **Prioridade:** Should-have
-
-## 4. Usabilidade (Usability)
-- **RNF-05: Operabilidade de Alertas**
-    - **Descrição:** Alertas críticos devem conter contexto suficiente para ação imediata sem necessidade de busca manual profunda em logs.
-    - **SLI:** Tempo médio para diagnóstico inicial (MTTD).
-    - **SLO:** < 5 minutos para falhas críticas.
+- **RNF-06: Isolamento via Docker**
+    - **Descrição:** Toda a stack (MinIO, ClickHouse, Grafana) deve rodar isolada em containers.
+    - **SLO:** Provisionamento total via `docker-compose` em < 10 minutos.
     - **Prioridade:** Must-have
 
-## 5. Confiabilidade (Reliability)
-- **RNF-06: Taxa de Sucesso do Pipeline (Availability)**
-    - **Descrição:** Disponibilidade do pipeline para processar novos dados assim que disponibilizados.
-    - **SLI:** % de execuções finalizadas com sucesso sem intervenção manual.
-    - **SLO:** 99.9% (Janela mensal).
+## 4. Segurança
+- **RNF-07: Controle de Acesso ao Banco OLAP**
+    - **Descrição:** Restrição de usuários e senhas para acesso ao ClickHouse e MinIO, mesmo localmente.
+    - **SLO:** 100% de conformidade com secrets não expostos em código.
     - **Prioridade:** Must-have
-
-- **RNF-07: Recuperabilidade (Recoverability)**
-    - **Descrição:** Capacidade de reiniciar o processamento a partir de falhas parciais (ex: falha de rede) sem perda de dados ou duplicação.
-    - **SLI:** Tempo de recuperação automática após falha transitória.
-    - **SLO:** < 10 minutos para retentativa automática.
-    - **Prioridade:** Must-have
-
-## 6. Segurança (Security)
-- **RNF-08: Proteção de Dados em Repouso**
-    - **Descrição:** Todos os dados armazenados nas áreas de estágio e persistência devem ser protegidos contra acesso não autorizado e corrupção.
-    - **SLI:** Auditoria de conformidade de criptografia e permissões.
-    - **SLO:** 100% dos volumes/buckets criptografados.
-    - **Prioridade:** Must-have
-
-## 7. Manutenibilidade (Maintainability)
-- **RNF-09: Observabilidade Distribuída**
-    - **Descrição:** Capacidade de rastrear uma unidade de processamento através de todos os componentes do sistema.
-    - **SLI:** % de execuções com Trace ID único persistido e correlacionado.
-    - **SLO:** 100%.
-    - **Prioridade:** Should-have
-
-## 8. Portabilidade (Portability)
-- **RNF-10: Independência de Ambiente**
-    - **Descrição:** O componente de processamento deve ser executável em ambientes de container padronizados.
-    - **SLI:** Tempo de setup de um novo ambiente de execução via IaC/Container.
-    - **SLO:** < 30 minutos.
-    - **Prioridade:** Could-have
 
 ---
 
@@ -76,16 +47,13 @@ Este documento define os requisitos de qualidade técnica para o pipeline de pro
 
 | ID | Atributo | SLI (Métrica) | SLO (Meta) | Fonte de Medição | Prioridade |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| RNF-01 | Adequação Funcional | Razão Registros Origem/Destino | 100% | Auditoria de Logs | Must-have |
-| RNF-02 | Performance | Tempo de Lote (100k) | < 4 horas | Monitoramento de Workflow | Must-have |
-| RNF-03 | Performance | Data Freshness (P95) | < 15 min | Logs de Timestamp | Should-have |
-| RNF-04 | Compatibilidade | Sucesso de Encoding | 100% | Logs de Validação | Should-have |
-| RNF-05 | Usabilidade | Tempo de Diagnóstico (MTTD) | < 5 min | Painel de Incidentes | Must-have |
-| RNF-06 | Confiabilidade | Pipeline Success Rate | 99.9% | Métrica de Orquestração | Must-have |
-| RNF-07 | Confiabilidade | Tempo de Recuperação | < 10 min | Logs de Retry | Must-have |
-| RNF-08 | Segurança | Taxa de Criptografia | 100% | Cloud Auditor | Must-have |
-| RNF-09 | Manutenibilidade | Cobertura de Tracing | 100% | Sistema de Tracing | Should-have |
-| RNF-10 | Portabilidade | Tempo de Provisionamento | < 30 min | Logs de Deploy/CI | Could-have |
+| RNF-01 | Performance | Tempo de Ingestão | < 5 min | Logs de ETL | Must-have |
+| RNF-02 | Performance | Latência de Query | < 1s | ClickHouse System Logs | Must-have |
+| RNF-03 | Confiabilidade | Integridade de Dados | 100% | dbt tests | Must-have |
+| RNF-04 | Confiabilidade | Tempo de Recovery | < 10 min | Logs de Execução | Must-have |
+| RNF-05 | Manutenibilidade | Documentação dbt | 100% | dbt docs | Should-have |
+| RNF-06 | Portabilidade | Tempo de Setup | < 10 min | Docker Compose | Must-have |
+| RNF-07 | Segurança | Gestão de Secrets | 100% | Auditoria de Env | Must-have |
 
 ---
-**Nota:** Este documento segue as diretrizes da skill `agents/skills/elicit_rnf.md` e a norma ISO 25010.
+**Nota:** Este documento prioriza a performance colunar e a reprodutibilidade local via Docker.
