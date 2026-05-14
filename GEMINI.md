@@ -23,8 +23,17 @@ Este diretório contém toda a documentação oficial do ciclo de vida do softwa
 
 ## 🏗️ Tecnologias Principais (Stack OLAP Local)
 - **Object Storage:** MinIO (API compatível com S3).
-- **Ingestão:** Python / DuckDB.
+- **Ingestão:** Python (Boto3 + ClickHouse-Connect).
 - **Banco OLAP:** ClickHouse (Colunar).
 - **Transformação:** dbt (data build tool).
 - **Visualização:** Grafana.
 - **Orquestração de Infra:** Docker Compose.
+
+## 🛠️ Processo de Ingestão
+A ingestão é realizada por um script Python que:
+1. Lê arquivos CSV do bucket `olist-raw` no MinIO.
+2. Converte cada linha em um objeto JSON.
+3. Insere os dados na tabela `ingestion` do ClickHouse com as colunas:
+   - `unixtime`: Timestamp da carga.
+   - `data`: Conteúdo da linha em formato JSON (String).
+   - `tag`: Nome do arquivo de origem.
