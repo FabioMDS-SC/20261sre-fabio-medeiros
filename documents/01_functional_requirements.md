@@ -7,7 +7,7 @@ Este documento detalha as funcionalidades necessárias para a modernização do 
 - **Serviço de Ingestão (Python/DuckDB):** Componente que move dados do Object Storage para o Banco OLAP.
 - **Banco OLAP (ClickHouse):** Armazenamento colunar para análise de alto desempenho (Camada Silver/Gold).
 - **Ferramenta de Transformação (dbt):** Motor de processamento para lógica de negócio e modelagem.
-- **Visualizador (Grafana):** Interface de consumo dos dados transformados.
+- **Visualizador (Streamlit):** Interface de consumo dos dados transformados.
 
 ## 🛠️ Requisitos de Ingestão e Processamento
 
@@ -44,9 +44,9 @@ Este documento detalha as funcionalidades necessárias para a modernização do 
 - **Critério de Aceitação:** Registro de erro com traceback completo disponível localmente.
 
 ### RF07: Dashboard Analítico
-- **Descrição:** Disponibilização de painéis interativos no Grafana consumindo diretamente do ClickHouse.
+- **Descrição:** Disponibilização de painéis interativos no Streamlit consumindo diretamente do ClickHouse.
 - **Prioridade:** Should-have
 - **Critério de Aceitação:** Visualização de KPIs (pedidos por dia, status, etc.) com tempo de resposta < 2s.
 
 ---
-**Nota:** Este documento foca no fluxo analítico: MinIO -> ClickHouse -> dbt -> Grafana.
+**Nota:** Este documento foca no fluxo analítico: MinIO -> ClickHouse -> dbt -> Streamlit.

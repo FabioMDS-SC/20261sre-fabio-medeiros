@@ -31,7 +31,7 @@ Este documento define os requisitos de qualidade técnica para o pipeline analí
     - **Prioridade:** Should-have
 
 - **RNF-06: Isolamento via Docker**
-    - **Descrição:** Toda a stack (MinIO, ClickHouse, Grafana) deve rodar isolada em containers.
+    - **Descrição:** Toda a stack (MinIO, ClickHouse, Streamlit) deve rodar isolada em containers.
     - **SLO:** Provisionamento total via `docker-compose` em < 10 minutos.
     - **Prioridade:** Must-have
 

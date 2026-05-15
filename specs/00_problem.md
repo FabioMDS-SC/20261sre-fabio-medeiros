@@ -22,7 +22,7 @@ O negócio Olist precisa processar aproximadamente **100 mil pedidos** do market
 
 ### 2. Fluxos Críticos
 - **Ingestão Diária:** Extração do CSV e carga no Postgres.
-- **Consulta de Dashboards:** Disponibilização dos dados via Grafana para os usuários.
+- **Consulta de Dashboards:** Disponibilização dos dados via Streamlit para os usuários.
 - **Observação de SLA:** Monitoramento contínuo para garantir que o dado esteja disponível no tempo acordado.
 
 ### 3. Modos de Falha

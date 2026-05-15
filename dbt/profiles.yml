@@ -1,0 +1,13 @@
+olist:
+  target: dev
+  outputs:
+    dev:
+      type: clickhouse
+      host: "{{ env_var('CLICKHOUSE_HOST', 'clickhouse') }}"
+      port: 8123
+      user: "{{ env_var('CLICKHOUSE_USER', 'admin') }}"
+      password: "{{ env_var('CLICKHOUSE_PASSWORD', 'admin123') }}"
+      schema: olist
+      secure: False
+      verify: False
+      connect_timeout: 10

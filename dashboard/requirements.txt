@@ -1,0 +1,5 @@
+streamlit
+clickhouse-connect
+pandas
+plotly
+python-dotenv

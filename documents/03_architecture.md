@@ -6,7 +6,7 @@ Este documento descreve a arquitetura do pipeline de processamento de pedidos ut
 **Propósito:** Modernizar a ingestão de pedidos da Olist utilizando uma arquitetura analítica moderna rodando localmente.
 - **Objetivo:** Processar 100k pedidos/dia em < 4h (RNF-02) com foco em performance analítica (OLAP).
 - **Stakeholders:** Time de Analytics e Engenharia de Dados.
-- **Processo de Negócio:** Depósito no Object Storage local (MinIO) -> Ingestão para Staging Local -> Carga no Banco OLAP (ClickHouse) -> Transformação (dbt) -> Dashboard (Grafana).
+- **Processo de Negócio:** Depósito no Object Storage local (MinIO) -> Ingestão para Staging Local -> Carga no Banco OLAP (ClickHouse) -> Transformação (dbt) -> Dashboard (Streamlit).
 
 ## 2. Information Viewpoint (Ponto de Vista de Informação)
 **Foco:** Ciclo de vida dos dados analíticos.
@@ -20,11 +20,12 @@ Este documento descreve a arquitetura do pipeline de processamento de pedidos ut
 - **Serviço de Ingestão:** Script Python que extrai dados do MinIO e carrega no ClickHouse (utilizando buffers ou carga direta por arquivo).
 - **Banco OLAP:** ClickHouse responsável por armazenamento colunar de alta performance.
 - **Motor de Transformação:** dbt (data build tool) ou scripts SQL para processar dados dentro do ClickHouse.
-- **Interface de Dashboard:** Grafana conectado ao ClickHouse para visualização em tempo real das métricas.
+- **Interface de Dashboard:** Streamlit conectado ao ClickHouse para visualização em tempo real das métricas.
 
 ## 4. Engineering Viewpoint (Ponto de Vista de Engenharia)
 **Foco:** Infraestrutura local via Docker.
 - **Object Storage Local:** MinIO (API compatível com S3) rodando em container.
+- **Data Management:** MinIO Client (mc) para operações de linha de comando e automação de upload.
 - **Banco Analítico:** ClickHouse (Engine MergeTree) para consultas rápidas em grandes volumes.
 - **Orquestrador de Containers:** Docker Compose gerenciando a rede e volumes.
 - **Agendamento:** Cron ou script Python de controle para disparar o lote diário.
@@ -35,7 +36,7 @@ Este documento descreve a arquitetura do pipeline de processamento de pedidos ut
 - **Banco OLAP:** ClickHouse.
 - **Ingestão/ETL:** Python (Pandas/DuckDB como motor de carga).
 - **Transformação:** dbt-clickhouse ou SQL nativo.
-- **Visualização:** Grafana.
+- **Visualização:** Streamlit.
 - **Infraestrutura:** Docker & Docker Compose.
 
 ---

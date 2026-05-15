@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: clickhouse_ingestion
+    database: olist
+    schema: olist
+    tables:
+      - name: ingestion

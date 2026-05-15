@@ -13,8 +13,8 @@ load_dotenv()
 MINIO_ENDPOINT = os.getenv('MINIO_ENDPOINT', 'localhost:9000')
 MINIO_ACCESS_KEY = os.getenv('MINIO_ACCESS_KEY', 'admin')
 MINIO_SECRET_KEY = os.getenv('MINIO_SECRET_KEY', 'admin123')
-BUCKET_NAME = 'olistproject'
-PREFIX = 'archive/'
+BUCKET_NAME = os.getenv('MINIO_BUCKET', 'olist-raw')
+PREFIX = os.getenv('MINIO_PREFIX', '')
 
 CLICKHOUSE_HOST = os.getenv('CLICKHOUSE_HOST', 'localhost')
 CLICKHOUSE_USER = os.getenv('CLICKHOUSE_USER', 'default')
@@ -54,6 +54,13 @@ def ingest_files():
     ch_client = get_clickhouse_client()
     
     setup_database(ch_client)
+    
+    # Garantir que o bucket existe
+    try:
+        s3.head_bucket(Bucket=BUCKET_NAME)
+    except:
+        print(f"Criando bucket: {BUCKET_NAME}")
+        s3.create_bucket(Bucket=BUCKET_NAME)
     
     # Listar objetos no MinIO
     response = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=PREFIX)

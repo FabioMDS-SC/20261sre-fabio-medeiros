@@ -10,15 +10,36 @@ O sistema é composto pelos seguintes serviços integrados em uma rede Docker in
 - **`clickhouse`**: Banco de Dados OLAP para armazenamento analítico (Silver/Gold).
 - **`ingestion-engine`**: Container Python/DuckDB que realiza o movimento de dados do MinIO para o ClickHouse.
 - **`dbt-runner`**: Container responsável por executar as transformações SQL dentro do ClickHouse.
-- **`grafana`**: Interface de dashboard para visualização dos dados.
+- **`streamlit`**: Interface de dashboard para visualização dos dados.
 
-## 2. Fluxo de Dados (Step-by-Step)
+## 2. Procedimento de Carga de Dados (Manual/CLI)
+
+Caso a interface gráfica do MinIO não esteja acessível, o upload de arquivos pode ser realizado via container do MinIO Client (`mc`):
+
+```bash
+docker run --rm -v ./dados_olist:/data --network olist_network \
+  --entrypoint /bin/sh minio/mc \
+  -c "mc alias set myminio http://minio:9000 admin password123 && mc cp /data/ myminio/olist-raw/ --recursive"
+```
+
+Este comando:
+1. Mapeia a pasta local `./dados_olist` para o container.
+2. Configura o alias para o servidor MinIO interno.
+3. Copia recursivamente todos os CSVs para o bucket `olist-raw`.
+
+## 3. Fluxo de Dados (Step-by-Step)
 
 1.  **Landing Zone**: O operador ou processo externo coloca os arquivos CSV no bucket `olist-raw` do MinIO.
 2.  **Ingestion**: O `ingestion-engine` detecta os arquivos, utiliza o **DuckDB** para ler o S3 local de forma eficiente e faz o stream dos dados para a tabela `staging` no **ClickHouse**.
 3.  **Storage**: O ClickHouse persiste os dados utilizando o engine `MergeTree`, garantindo alta compressão e velocidade de leitura.
-4.  **Transformation**: O `dbt-runner` executa modelos SQL que criam visões de negócio (ex: `fct_pedidos`, `dim_vendedores`) na camada Gold do ClickHouse.
-5.  **Visualization**: O Grafana consulta as tabelas da camada Gold para exibir KPIs de negócio.
+4.  **Transformation**: O `dbt-runner` executa modelos SQL que criam visões de negócio na camada Gold do ClickHouse:
+    - `stg_orders`: Limpeza e tipagem dos dados de pedidos.
+    - `stg_order_items`: Processamento de itens e valores.
+    - `fct_orders`: Tabela fato consolidada com KPIs de vendas (GMV, ticket médio).
+5.  **Visualization**: O Streamlit consulta a tabela `fct_orders` para exibir:
+    - KPIs em tempo real (GMV, Pedidos, Clientes).
+    - Tendências de vendas diárias.
+    - Distribuição de status de pedidos.
 
 ## 3. Estratégia de Performance
 

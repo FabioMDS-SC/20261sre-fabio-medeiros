@@ -2,7 +2,7 @@
 
 ## Projeto: Modernização do Pipeline de Ingestão de Dados (Olist)
 
-Este projeto tem como objetivo a estabilização e modernização do pipeline de ingestão de dados da Olist, utilizando uma arquitetura analítica moderna e local. O fluxo processa arquivos CSV de um Object Storage local (MinIO) para um Banco OLAP (ClickHouse), com transformações via dbt e visualização no Grafana.
+Este projeto tem como objetivo a estabilização e modernização do pipeline de ingestão de dados da Olist, utilizando uma arquitetura analítica moderna e local. O fluxo processa arquivos CSV de um Object Storage local (MinIO) para um Banco OLAP (ClickHouse), com transformações via dbt e visualização no Streamlit.
 
 ## 📂 Estrutura de Diretórios
 
@@ -26,7 +26,7 @@ Este diretório contém toda a documentação oficial do ciclo de vida do softwa
 - **Ingestão:** Python (Boto3 + ClickHouse-Connect).
 - **Banco OLAP:** ClickHouse (Colunar).
 - **Transformação:** dbt (data build tool).
-- **Visualização:** Grafana.
+- **Visualização:** Streamlit.
 - **Orquestração de Infra:** Docker Compose.
 
 ## 🛠️ Processo de Ingestão
