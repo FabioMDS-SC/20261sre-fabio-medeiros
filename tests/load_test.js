@@ -19,8 +19,8 @@ export default function () {
   const res = http.post(url, query, {
     headers: { 
       'Content-Type': 'text/plain',
-      'X-ClickHouse-User': 'admin',
-      'X-ClickHouse-Key': 'admin123'
+      'X-ClickHouse-User': 'default',
+      'X-ClickHouse-Key': 'password123'
     },
   });
 

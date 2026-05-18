@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: "Tabela fato de pedidos agregada."
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        tests:
+          - not_null
+      - name: total_order_value
+        tests:
+          - not_null
